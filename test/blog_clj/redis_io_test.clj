@@ -10,7 +10,7 @@
 
 (facts "about redis read and write"
        (against-background [(before :contents (clean-test-keys!))
-                            ;(after :contents (clean-test-keys!))
+                            (after :contents (clean-test-keys!))
                             (around :facts (binding [site test-site] ?form))]
                            (fact "check create new blog process"
                                  (new-blog {:title "[1]This is a test title!"

@@ -11,8 +11,12 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [compojure "1.5.1"]
                  [ring/ring-defaults "0.2.1"]
-                 [com.taoensso/carmine  "2.14.0"]]
-  :plugins [[lein-ring "0.9.7"]]
+                 [com.taoensso/carmine  "2.14.0"]
+                 [enlive  "1.1.6"]
+                 [clj.qiniu "0.1.2"]
+                 [jarohen/chime "0.1.9"]]
+  :plugins [[lein-ring "0.9.7"]
+            [lein-environ  "1.1.0"]]
   :ring {:handler blog-clj.handler/app}
   :profiles
   {:dev {:dependencies [[javax.servlet/servlet-api "2.5"]
