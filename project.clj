@@ -14,7 +14,8 @@
                  [com.taoensso/carmine  "2.14.0"]
                  [enlive  "1.1.6"]
                  [clj.qiniu "0.1.2"]
-                 [jarohen/chime "0.1.9"]]
+                 [jarohen/chime "0.1.9"]
+                 [clj-time "0.12.0"]]
   :plugins [[lein-ring "0.9.7"]
             [lein-environ  "1.1.0"]]
   :ring {:handler blog-clj.handler/app}
