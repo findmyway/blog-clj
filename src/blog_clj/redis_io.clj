@@ -50,7 +50,7 @@
   related invert-index-set"
   [blog-id new-tags]
   (let [bkey (blog-key blog-id)
-        old-tags (wcar* (car/hget bkey :tags))
+        old-tags (set (wcar* (car/hget bkey :tags)))
         tags-to-add (difference new-tags old-tags)
         tags-to-delete (difference old-tags new-tags)]
     (wcar* (car/hmset bkey :tags new-tags)
