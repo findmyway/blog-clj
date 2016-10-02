@@ -1,9 +1,10 @@
 (ns blog-clj.redis-io
-  (:require [taoensso.carmine :as car :refer  (wcar)]
-            [clojure.set :refer (difference)]
+  (:require [taoensso.carmine :as car :refer  [wcar]]
+            [clojure.set :refer [difference]]
             [clj-time.local :as l]
             [clj-time.coerce :as c]
-            [clj-time.format :as f]))
+            [clj-time.format :as f]
+            [clojure.walk :refer [keywordize-keys]]))
 
 (def server1-conn {:pool {} :spec {}})
 
@@ -24,10 +25,15 @@
    (l/local-now)))
 
 (defn get-blog
-  "get all contents given a blog-id"
-  [blog-id]
-  (let [bkey (blog-key blog-id)]
-    (apply hash-map (wcar* (car/hgetall bkey)))))
+  "get contents given a blog-id"
+  ([blog-id]
+   (let [bkey (blog-key blog-id)]
+     (keywordize-keys
+      (apply hash-map (wcar* (car/hgetall bkey))))))
+  ([blog-id & blog-keys]
+   (let [bkey (blog-key blog-id)]
+     (zipmap blog-keys
+             (wcar* (apply car/hmget bkey blog-keys))))))
 
 (defn get-blogids-with-tag
   [tag]
@@ -65,21 +71,23 @@
   `:title`: the blog title
   `:tags`: the tags of blog
   `:body`: the content of blog in markdown
-  `:create_time`: the create_time of blog
-  `:update_time`: last update time"
-  [blog-id contents]
-  (let [bkey (blog-key blog-id)
-        updated-contents (assoc contents :update_time (now))]
+  `:create-time`: the create_time of blog
+  `:update-time`: last update time"
+  [contents]
+  (let [blog-id (:blog-id contents)
+        bkey (blog-key blog-id)]
     (when (contains? contents :tags)
       (update-tags blog-id (:tags contents)))
-    (wcar* (mapv #(apply car/hmset bkey %)  updated-contents)
-           (car/zadd (all-blogs) (c/to-long (now)) blog-id))))
+    (wcar* (mapv #(apply car/hmset bkey %)  contents)
+           (car/zadd (all-blogs) (c/to-long (:update-time contents)) blog-id))))
 
 (defn new-blog
   [contents]
   (let [new-blog-id (wcar* (car/incr (blog-id-key)))
-        new-contents (assoc contents :create_time (now))]
-    (update-blog new-blog-id new-contents)))
+        new-contents (merge contents
+                            {:blog-id new-blog-id
+                             :create-time (:update-time contents)})]
+    (update-blog new-contents)))
 
 (defn delete-blog
   [blog-id]

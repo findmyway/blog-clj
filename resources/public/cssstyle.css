@@ -1,0 +1,229 @@
+@font-face {
+    font-family: 'Yanone Kaffeesatz';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Yanone Kaffeesatz Regular'), local('YanoneKaffeesatz-Regular'), url(http://ontheroad.qiniudn.com/blog/static/css/YDAoLskQQ5MOAgvHUQCcLfGwxTS8d1Q9KiDNCMKLFUM.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+
+@font-face {
+    font-family: 'Tangerine';
+    font-style: normal;
+    font-weight: 400;
+    src: local('Tangerine'), url(http://ontheroad.qiniudn.com/blog/static/css/HGfsyCL5WASpHOFnouG-RFtXRa8TVwTICgirnJhmVJw.woff2) format('woff2');
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+}
+
+html
+{ height: 100%;}
+
+body {
+    font-family: "Hiragino Sans GB", "冬青黑体简体中文", "Microsoft YaHei", "微软雅黑", SimSun, "宋体", Heiti, "黑体", 'droid_sansregular', arial, sans-serif;
+    background: #F7F7F7 url(http://ontheroad.qiniudn.com/blog/static/images/pattern.png) fixed;
+    color: #555;
+    font-size: 16.5px;
+}
+
+.post-title {
+    text-align: center;
+}
+.post-time {
+    text-align: right;
+    margin: 0 30px 20px 0;
+}
+.post-content p {
+    text-indent:2em;
+}
+
+h1, .h1,
+h2, .h2,
+h3, .h3,
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+    font-family: 'Yanone Kaffeesatz', arial, sans-serif;
+    color: #555;
+    margin-top:20px;
+    margin-bottom:20px;
+    font-size: 24px;
+    font-weight:800;
+}
+
+h1, .h1{
+    font-size: 30px;
+    font-weight:500;
+}
+
+blockquote {
+    padding-left: 1em;
+    margin-left: 2em;
+}
+
+a:link,a:visited{
+
+    text-decoration:none;
+    color: #35BDF5;
+}
+
+a:hover,a:active
+{
+    color:#F14E23;
+    text-decoration:none;}
+
+.post-content ol{
+    line-style-position: inside;
+}
+
+.sidebar-container ul {
+    padding:10px;
+}
+
+.sidebar-container ul li {
+    text-indent:0;
+    list-style-type: circle;
+    margin: 0 0 0 0;
+    padding: 0 0 4px 5px;
+    font-size: 14px;
+}
+
+.content img {
+    max-width: 100%;
+}
+
+.share img {
+    max-height: 600px;
+}
+
+.blog-header{
+    padding-top: 30px;
+    text-align: center;
+}
+
+#blog-title {
+    font-family: 'Yanone Kaffeesatz', arial, sans-serif;
+    font-size: 200%;
+}
+
+#blog-slogan {
+    font-family: 'Tangerine', arial, sans-serif;
+    font-size: 200%;
+}
+
+.blog-nav  {
+    font-family: 'Tangerine', arial, sans-serif;
+    margin-bottom: 30px;
+    font-size: 100%;
+}
+
+.blog-nav .active {
+    font-weight:900;
+    padding-bottom:16px;
+}
+
+.content {
+    float: left;
+    margin-right:20px;
+}
+
+.post {
+    margin-bottom: 150px;
+}
+
+.share {
+    margin-bottom: 50px;
+    background: #f5f5f5;
+    border-radius: 10px;
+}
+
+.sidebar-flag{
+    float:left;
+    display: inline;
+}
+
+.paperclip {
+    float: left;
+    position: relative;
+    z-index: 0;
+    vertical-align: middle;
+    margin: -27px 0 -60px -30px;
+}
+
+.sidebar-container{
+    border-color: #f0f0f0;
+    border-style:solid;
+    border-radius: 20px;
+    padding-left: 10px;
+    margin-left: 10px;
+    margin-bottom: 10px;
+}
+
+.sidebar-container h1{
+    text-align: center;
+}
+
+/*#query {*/
+    /*width: 100px;*/
+/*}*/
+#footer {
+    text-align:center;
+    margin-top:30px;
+}
+
+@media (min-width: 992px) {
+    #blog-title {
+        text-align: left;
+        font-size: 300%;
+    }
+    #blog-slogan{
+        text-align: right;
+        font-size: 300%;
+    }
+    .blog-nav  {
+        font-size: 200%;
+    }
+    .container {
+        width: 992px;
+    }
+}
+
+#sidebar-trigger {
+    width: 15px;
+    position: fixed;
+    float:left;
+    padding-top: 100px;
+    z-index: 2;
+    height: 80%;
+    cursor: pointer;
+    background-color: #f0f0f0;
+    border-radius: 0 10px 10px 0;
+    font-family: "Glyphicons Halflings", arial, sans-serif;
+}
+
+#sidebar-trigger:hover {
+    background-color: #e7e7e7;
+}
+
+.icons {
+    text-align:center;
+}
+
+#weixin-QR-code {
+    display: none;
+    max-width:200px;
+}
+
+.glyphicon {
+    padding: 5px;
+}
+
+span.badge {
+    margin-left: 5px;
+}
+
+.post-content blockquote p{
+    text-indent:0;
+}
+
+.post-content ol p{
+    text-indent:0;
+}

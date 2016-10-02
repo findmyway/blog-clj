@@ -1,10 +1,22 @@
 (ns blog-clj.schedules
   (:require [chime :refer [chime-at]]
             [clj-time.core :as t]
-            [clj-time.periodic :refer [periodic-seq]]))
+            [clj-time.periodic :refer [periodic-seq]]
+            [taoensso.timbre :refer [info]]))
 
-(chime-at  (take 5 (periodic-seq (t/now) (-> 1 t/seconds)))
-           (fn  [time]
-             (spit "test.txt" (str time "\n") :append true)))
+;; start some schedule tasks when server start
+;(def job (chime-at  (take 10 (periodic-seq (t/now) (-> 10 t/seconds)))
+                    ;(fn  [time]
+                      ;(spit "test.txt" (str time "\n") :append true))))
 
-(vec (take 2 (periodic-seq (t/now) (-> 5 t/minutes))))
+(defn start
+  "start some schedules when server starts"
+  []
+  (info "Starting Server..."))
+
+(defn stop
+  "stop some schedules when server shutdown"
+  []
+  (info "Stoping Server...")
+  ;(job)
+  )
