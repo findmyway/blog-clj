@@ -1,7 +1,9 @@
 (ns blog-clj.webhooks
   (:require [pandect.algo.sha1 :refer [sha1-hmac]]
             [clojure.edn :as edn]
-            [ring.util.response :refer [status response]]))
+            [ring.util.response :refer [status response]]
+            [clojure.java.shell :refer [sh]]
+            [blog-clj.sync :refer [sync-blogs]]))
 
 (def config (edn/read-string (slurp "config.clj")))
 
@@ -15,7 +17,10 @@
     (cond
       (and (= hmac signature)
            (= event-type "push"))
-      "A push event received!"
+      (do
+        (sh "git" "pull" :dir (:html-path config))
+        (sync-blogs)
+        "A push event received!")
       (and (= hmac signature)
            (not= event-type "push"))
       (format "Event %s received!" event-type)
