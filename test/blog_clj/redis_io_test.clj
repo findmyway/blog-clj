@@ -15,28 +15,34 @@
                            (fact "check create new blog process"
                                  (new-blog {:title "[1]This is a test title!"
                                             :tags #{"tag1" "tag2" "tag3"}
-                                            :body "[1]blog body: this is the blog body"})
+                                            :body "[1]blog body: this is the blog body"
+                                            :update-time  "2016-08-25 07:07:07"})
                                  => truthy
-                                 (provided (now) => "2016-08-25 07:07:07")
 
                                  (new-blog {:title "[2]This is a test title!"
                                             :tags #{"tag1" "tag4"}
-                                            :body "[2]blog body: this is the blog body"})
+                                            :body "[2]blog body: this is the blog body"
+                                            :update-time  "2016-08-25 08:08:08"})
                                  => truthy
-                                 (provided (now) => "2016-08-25 08:08:08")
 
                                  (new-blog {:title "[3]This is a test title!"
                                             :tags #{"tag3" "tag4" "tag5"}
-                                            :body "[3]blog body: this is the blog body"})
-                                 => truthy
-                                 (provided (now) => "2016-08-25 09:09:09"))
-                           (fact "check the newly created blog, here we ignore the create & update time"
-                                 (get-blog 1) => (contains [["title" "[1]This is a test title!"]
-                                                            ["tags" #{"tag1" "tag2" "tag3"}]
-                                                            ["body" "[1]blog body: this is the blog body"]])
-                                 (get-blog 2) => (contains [["title" "[2]This is a test title!"]
-                                                            ["tags" #{"tag1" "tag4"}]
-                                                            ["body" "[2]blog body: this is the blog body"]]))
+                                            :body "[3]blog body: this is the blog body"
+                                            :update-time  "2016-08-25 09:09:09"})
+                                 => truthy)
+                           (fact "check the newly created blog"
+                                 (get-blog 1) => (contains [[:title "[1]This is a test title!"]
+                                                            [:tags #{"tag1" "tag2" "tag3"}]
+                                                            [:body "[1]blog body: this is the blog body"]
+                                                            [:update-time "2016-08-25 07:07:07"]
+                                                            [:create-time "2016-08-25 07:07:07"]])
+                                 (get-blog 2) => (contains [[:title "[2]This is a test title!"]
+                                                            [:tags #{"tag1" "tag4"}]
+                                                            [:body "[2]blog body: this is the blog body"]
+                                                            [:update-time "2016-08-25 08:08:08"]
+                                                            [:create-time "2016-08-25 08:08:08"]])
+                                 (get-blog 3 :title :update-time) => (contains [[:title "[3]This is a test title!"]
+                                                                                [:update-time "2016-08-25 09:09:09"]]))
                            (fact "check all blog titles"
                                  (get-all-blogs-titles) => (just (just ["[3]This is a test title!"
                                                                         "3"
@@ -53,15 +59,21 @@
                                  (get-blogids-with-tag "tag4") => (just #{"2" "3"})
                                  (get-blogids-with-tag "tag5") => (just #{"3"}))
                            (fact "check updates"
-                                 (update-blog 1 {:title "[1] Blog title changed!"}) => truthy
-                                 (provided (now) =>  "2016-08-25 17:17:17")
-                                 (get-blog 1) => (contains [["title" "[1] Blog title changed!"]])
-                                 (update-blog 2 {:body "[2] Blog body changed!"}) => truthy
-                                 (provided (now) =>  "2016-08-25 18:18:18")
-                                 (get-blog 2) => (contains [["body"  "[2] Blog body changed!"]])
-                                 (update-blog 3 {:tags #{"tag1" "tag2" "tag4"}}) => truthy
-                                 (provided (now) =>  "2016-08-25 19:19:19")
-                                 (get-blog 3) => (contains [["tags" #{"tag1" "tag2" "tag4"}]])
+                                 (update-blog {:body "Body 1 changed!"
+                                               :blog-id "1"
+                                               :update-time "2016-08-25 11:11:11"}) => truthy
+                                 (get-blog 1) => (contains [[:body "Body 1 changed!"]
+                                                            [:update-time "2016-08-25 11:11:11"]])
+                                 (update-blog {:body "Body 2 changed!"
+                                               :blog-id "2"
+                                               :update-time "2016-08-25 12:12:12"}) => truthy
+                                 (get-blog 2) => (contains [[:body  "Body 2 changed!"]
+                                                            [:update-time "2016-08-25 12:12:12"]])
+                                 (update-blog {:tags #{"tag1" "tag2" "tag4"}
+                                               :blog-id "3"
+                                               :update-time "2016-08-25 13:13:13"}) => truthy
+
+                                 (get-blog 3) => (contains [[:tags #{"tag1" "tag2" "tag4"}]])
                                  (get-blogids-with-tag "tag1") => (just #{"1" "2" "3"})
                                  (get-blogids-with-tag "tag2") => (just #{"1" "3"})
                                  (get-blogids-with-tag "tag3") => (just #{"1"})
@@ -69,13 +81,13 @@
                                  (get-blogids-with-tag "tag5") => (just [])
                                  (get-all-blogs-titles) => (just (just ["[3]This is a test title!"
                                                                         "3"
-                                                                        (str (c/to-long "2016-08-25 19:19:19"))])
+                                                                        (str (c/to-long "2016-08-25 13:13:13"))])
                                                                  (just ["[2]This is a test title!"
                                                                         "2"
-                                                                        (str (c/to-long "2016-08-25 18:18:18"))])
-                                                                 (just ["[1] Blog title changed!"
+                                                                        (str (c/to-long "2016-08-25 12:12:12"))])
+                                                                 (just ["[1]This is a test title!"
                                                                         "1"
-                                                                        (str (c/to-long "2016-08-25 17:17:17"))])))
+                                                                        (str (c/to-long "2016-08-25 11:11:11"))])))
                            (fact "check deletes"
                                  (delete-blog 1) => truthy
                                  (get-blog 1) => (just {})

@@ -18,7 +18,10 @@
                  [clj-time "0.12.0"]
                  [hickory "0.6.0"]
                  [clj-rss  "0.2.3"]
-                 [com.taoensso/timbre  "4.7.4"]]
+                 [com.taoensso/timbre  "4.7.4"]
+                 [ring/ring-json  "0.4.0"]
+                 [pandect  "0.6.0"]
+                 [org.clojure/data.json  "0.2.6"]]
   :plugins [[lein-ring "0.9.7"]
             [lein-environ  "1.1.0"]]
   :ring {:handler blog-clj.handler/app

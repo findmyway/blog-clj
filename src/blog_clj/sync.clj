@@ -6,6 +6,7 @@
             [clojure.zip :as zip]
             [clj-time.format :as f]
             [clj-time.coerce :as c]
+            [clj-time.core :as t]
             [hickory.render :refer [hickory-to-html]]
             [clojure.string :as string]
             [blog-clj.redis-io :refer [get-all-blogs-titles get-blog new-blog delete-blog update-blog]]
@@ -65,7 +66,9 @@
      :body (refact-node (hickory-zip (first (s/select (s/tag :body) file-hk))))
      :update-time (f/unparse
                    (f/formatter-local  "yyyy-MM-dd HH:mm:ss")
-                   (c/from-long (.lastModified (File. file-abs-path))))
+                   (t/to-time-zone
+                    (c/from-long (.lastModified (File. file-abs-path)))
+                    (t/time-zone-for-offset 8)))
      :tags (set (string/split (content-of :tags) #","))}))
 
 (defn sync-blogs

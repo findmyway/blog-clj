@@ -17,13 +17,6 @@
 (defn all-blogs [] (str site "all_blogs"))
 (defn blog-id-key [] (str site "blog_id"))
 
-(defn now
-  "get current time string"
-  []
-  (f/unparse
-   (f/formatter-local  "yyyy-MM-dd HH:mm:ss")
-   (l/local-now)))
-
 (defn get-blog
   "get contents given a blog-id"
   ([blog-id]
@@ -68,11 +61,14 @@
   
   `contents` is a map of following keys: 
 
+  `:blog-id`: this field is required
   `:title`: the blog title
   `:tags`: the tags of blog
   `:body`: the content of blog in markdown
   `:create-time`: the create_time of blog
-  `:update-time`: last update time"
+  `:update-time`: last update time, this field is required!
+  
+  TODO: Add field checker, throw Exception"
   [contents]
   (let [blog-id (:blog-id contents)
         bkey (blog-key blog-id)]
@@ -82,6 +78,8 @@
            (car/zadd (all-blogs) (c/to-long (:update-time contents)) blog-id))))
 
 (defn new-blog
+  "create a new blog-id and then call update-blog
+  the update-time is required!"
   [contents]
   (let [new-blog-id (wcar* (car/incr (blog-id-key)))
         new-contents (merge contents
