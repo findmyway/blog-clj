@@ -69,7 +69,10 @@
                    (t/to-time-zone
                     (c/from-long (.lastModified (File. file-abs-path)))
                     (t/time-zone-for-offset 8)))
-     :tags (set (string/split (content-of :tags) #","))}))
+     :tags (let [tag-str (content-of :tags)]
+             (if (nil? tag-str)
+               #{}
+               (set (string/split tag-str #","))))}))
 
 (defn sync-blogs
   []

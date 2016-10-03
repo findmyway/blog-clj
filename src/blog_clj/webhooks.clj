@@ -9,8 +9,8 @@
 
 (defn sync-hook
   [req]
-  (let [event-type (get req "x-github-event")
-        signature (get req "x-hub-signature")
+  (let [event-type (get (:headers req) "x-github-event")
+        signature (get (:headers req) "x-hub-signature")
         post-body (slurp (:body req))
         hook-key (:github-webhook-secret config)
         hmac (str "sha1=" (sha1-hmac post-body hook-key))]
