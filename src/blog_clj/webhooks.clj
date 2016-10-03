@@ -3,9 +3,26 @@
             [clojure.edn :as edn]
             [ring.util.response :refer [status response]]
             [clojure.java.shell :refer [sh]]
-            [blog-clj.sync :refer [sync-blogs]]))
+            [blog-clj.sync :refer [sync-blogs]]
+            [clojure.data.json :as json]
+            [clojure.string :as string]
+            [clojure.set :refer [union]]))
 
 (def config (edn/read-string (slurp "config.clj")))
+
+(defn get-file-changes
+  [push-payload]
+  (let [payload (json/read-str push-payload :key-fn keyword)
+        commits (:commits payload)
+        is-publish? #(string/starts-with? % "resources/published-html/")
+        trim-prefix #(string/replace % "resources/published-html/" "")
+        get-changed-files (fn [change-type]
+                            (map trim-prefix
+                                 (filter is-publish?
+                                         (apply union
+                                                (map #(set (change-type %))
+                                                     commits)))))]
+    (map get-changed-files [:added :removed :modified])))
 
 (defn sync-hook
   [req]
@@ -19,7 +36,7 @@
            (= event-type "push"))
       (do
         (sh "git" "pull" :dir (:html-path config))
-        (sync-blogs)
+        (apply sync-blogs (get-file-changes post-body))
         "A push event received!")
       (and (= hmac signature)
            (not= event-type "push"))

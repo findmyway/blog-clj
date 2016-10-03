@@ -1,9 +1,7 @@
 (ns blog-clj.redis-io
   (:require [taoensso.carmine :as car :refer  [wcar]]
             [clojure.set :refer [difference]]
-            [clj-time.local :as l]
             [clj-time.coerce :as c]
-            [clj-time.format :as f]
             [clojure.walk :refer [keywordize-keys]]))
 
 (def server1-conn {:pool {} :spec {}})

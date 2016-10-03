@@ -5,6 +5,7 @@
             [hickory.zip :refer [hickory-zip]]
             [clojure.zip :as zip]
             [clj-time.format :as f]
+            [clj-time.local :as l]
             [clj-time.coerce :as c]
             [clj-time.core :as t]
             [hickory.render :refer [hickory-to-html]]
@@ -67,7 +68,7 @@
      :update-time (f/unparse
                    (f/formatter-local  "yyyy-MM-dd HH:mm:ss")
                    (t/to-time-zone
-                    (c/from-long (.lastModified (File. file-abs-path)))
+                    (l/local-now)
                     (t/time-zone-for-offset 8)))
      :tags (let [tag-str (content-of :tags)]
              (if (nil? tag-str)
@@ -75,34 +76,27 @@
                (set (string/split tag-str #","))))}))
 
 (defn sync-blogs
-  []
+  [added-blogs removed-blogs modified-blogs]
   (info "syncing...")
-  (let [html-dir (:html-path config)
-        all-htmls (string/split (:out (sh "ls" html-dir)) #"\n")
-        all-htmls-updatetime (map #(.lastModified (File. (str html-dir %))) all-htmls)
-        all-blogs-infos (get-all-blogs-titles)
-        all-htmls-ids (into {} (for [[title id timestamp] all-blogs-infos] [title id]))
-        new-stats (zipmap all-htmls all-htmls-updatetime)
-        old-stats (into {} (map #(vector (str (first %) ".html") (edn/read-string (last %))) all-blogs-infos))
-        [changed-new-blogs changed-old-blogs _] (diff new-stats old-stats)
-        [new-blogs delete-blogs updated-blogs] (diff (set (keys changed-new-blogs)) (set (keys changed-old-blogs)))]
+  (let [all-blogs-infos (get-all-blogs-titles)
+        all-htmls-ids (into {} (for [[title id timestamp] all-blogs-infos] [title id]))]
     (do
-      (when (not-empty new-blogs)
+      (when (not-empty added-blogs)
         (info (format "new blogs found: %s."
-                      (string/join ", " new-blogs))))
-      (when (not-empty delete-blogs)
+                      (string/join ", " added-blogs))))
+      (when (not-empty removed-blogs)
         (info (format "blogs to delete: %s."
-                      (string/join ", " delete-blogs))))
-      (when (not-empty updated-blogs)
+                      (string/join ", " removed-blogs))))
+      (when (not-empty modified-blogs)
         (info (format "blogs are updated: %s."
-                      (string/join ", " updated-blogs))))
-      (doall (map #(new-blog (get-meta %)) new-blogs))
+                      (string/join ", " modified-blogs))))
+      (doall (map #(new-blog (get-meta %)) added-blogs))
       (doall (map #(update-blog (let [blog-meta (get-meta %)]
                                   (assoc blog-meta
                                          :blog-id
                                          (get all-htmls-ids
                                               (:title blog-meta)))))
-                  updated-blogs))
+                  modified-blogs))
       (doall (map
               #(delete-blog (get all-htmls-ids (string/replace % #"\.html" "")))
-              delete-blogs)))))
+              removed-blogs)))))
