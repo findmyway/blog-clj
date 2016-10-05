@@ -1,14 +1,12 @@
 (ns blog-clj.webhooks
   (:require [pandect.algo.sha1 :refer [sha1-hmac]]
-            [clojure.edn :as edn]
+            [environ.core :refer  [env]]
             [ring.util.response :refer [status response]]
             [clojure.java.shell :refer [sh]]
             [blog-clj.sync :refer [sync-blogs]]
             [clojure.data.json :as json]
             [clojure.string :as string]
             [clojure.set :refer [union difference]]))
-
-(def config (edn/read-string (slurp "config.clj")))
 
 (defn get-file-changes
   [push-payload]
@@ -33,13 +31,13 @@
   (let [event-type (get (:headers req) "x-github-event")
         signature (get (:headers req) "x-hub-signature")
         post-body (slurp (:body req))
-        hook-key (:github-webhook-secret config)
+        hook-key (env :github-webhook-secret)
         hmac (str "sha1=" (sha1-hmac post-body hook-key))]
     (cond
       (and (= hmac signature)
            (= event-type "push"))
       (do
-        (sh "git" "pull" :dir (:html-path config))
+        (sh "git" "pull" :dir (env :html-path))
         (apply sync-blogs (get-file-changes post-body))
         "A push event received!")
       (and (= hmac signature)

@@ -1,6 +1,6 @@
 (ns blog-clj.sync
   (:require [clojure.java.shell :refer [sh]]
-            [clojure.edn :as edn]
+            [environ.core :refer  [env]]
             [hickory.select :as s]
             [hickory.zip :refer [hickory-zip]]
             [clojure.zip :as zip]
@@ -17,8 +17,6 @@
             [taoensso.timbre :refer [info]])
   (:import [java.io File]))
 
-(def config (edn/read-string (slurp "config.clj")))
-
 (defn refact-node
   [root]
   (let [try-remove (fn [cur-loc]
@@ -34,12 +32,12 @@
                          (do
                            (let [upload-result (upload href)]
                              (info (format "uploade:%s, upload status:%d" href (:status upload-result))))
-                           (zip/edit cur-loc #(assoc-in % [:attrs :href] (string/replace href #"\.\./public/" (:upload-path config)))))
+                           (zip/edit cur-loc #(assoc-in % [:attrs :href] (string/replace href #"\.\./public/" (env :upload-path)))))
                          (and (not (nil? src)) (string/starts-with? src "../public/"))
                          (do
                            (let [upload-result (upload src)]
                              (info (format "uploade:%s, upload status:%d" src (:status upload-result))))
-                           (zip/edit cur-loc #(assoc-in % [:attrs :src] (string/replace src #"\.\./public/" (:upload-path config)))))
+                           (zip/edit cur-loc #(assoc-in % [:attrs :src] (string/replace src #"\.\./public/" (env :upload-path)))))
                          :else cur-loc)))]
     (loop [cur-loc root]
       (if (zip/end? (zip/next cur-loc))
@@ -53,7 +51,7 @@
 
 (defn get-meta
   [file]
-  (let [file-abs-path (str (:html-path config) file)
+  (let [file-abs-path (str (env :html-path) file)
         file-hk (hk/as-hickory (hk/parse (slurp file-abs-path)))
         content-of #(->> file-hk
                          (s/select (s/id %))

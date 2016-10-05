@@ -21,7 +21,9 @@
                  [com.taoensso/timbre  "4.7.4"]
                  [ring/ring-json  "0.4.0"]
                  [pandect  "0.6.0"]
-                 [org.clojure/data.json  "0.2.6"]]
+                 [org.clojure/data.json  "0.2.6"]
+                 [environ  "1.1.0"]
+                 ]
   :plugins [[lein-ring "0.9.7"]
             [lein-environ  "1.1.0"]]
   :ring {:handler blog-clj.handler/app

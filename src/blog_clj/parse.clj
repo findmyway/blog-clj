@@ -62,7 +62,7 @@
 
 (defn disqus-sp
   [page-url page-id]
-  (let [disqus-template (jio/file (jio/resource "templates/disqus.html"))]
+  (let [disqus-template (.getResource  (clojure.lang.RT/baseLoader) "templates/disqus.html")]
     (html-snippet (format (slurp disqus-template)
                           page-url
                           page-id))))
@@ -102,7 +102,7 @@
 ; ============
 (defn about-sp
   []
-  (let [about-html (jio/file (jio/resource "templates/about.html"))]
+  (let [about-html (.getResource (clojure.lang.RT/baseLoader) "templates/about.html")]
     (html-snippet (slurp about-html))))
 
 (deftemplate about-template "templates/base.html"

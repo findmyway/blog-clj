@@ -1,18 +1,17 @@
 (ns blog-clj.upload-download
   [:require [clj.qiniu :as qiniu]
-   [clojure.edn :as edn]
+   [environ.core :refer  [env]]
    [clojure.string :as string]])
 
 (def bucket "ontheroad")
-(def config (edn/read-string (slurp "config.clj")))
 
 (qiniu/set-config!
- :access-key (:qiniu-ak config)
- :secret-key (:qiniu-sk config)
+ :access-key (env :qiniu-ak)
+ :secret-key (env :qiniu-sk)
  :up-host "http://up.qiniug.com")
 
 (defn upload
   [f]
-  (let [file-path (str (:html-path config) f)
+  (let [file-path (str (env :html-path) f)
         upload-key (str "upload/" (last (string/split f #"/")))]
     (qiniu/upload-bucket bucket upload-key file-path)))
