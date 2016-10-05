@@ -4,9 +4,9 @@
 
 ## Paragraph 1
 
-这里有一些图片，比如说![](../public/tj.png)
+这里有一些图片，比如说![](../public/love.png)
 
-还有一些文件链接，[文件1](../public/tj.png)，这样就可以了。
+还有一些文件链接，[文件1](../public/love.png)，这样就可以了。
 
 
 
