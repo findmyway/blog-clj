@@ -6,7 +6,7 @@
             [blog-clj.sync :refer [sync-blogs]]
             [clojure.data.json :as json]
             [clojure.string :as string]
-            [clojure.set :refer [union]]))
+            [clojure.set :refer [union difference]]))
 
 (def config (edn/read-string (slurp "config.clj")))
 
@@ -21,8 +21,12 @@
                                  (filter is-publish?
                                          (apply union
                                                 (map #(set (change-type %))
-                                                     commits)))))]
-    (map get-changed-files [:added :removed :modified])))
+                                                     commits)))))
+        [added removed modified] (map get-changed-files [:added :removed :modified])
+        real-added (difference added removed)
+        real-removed (difference removed added)
+        real-modified (difference modified added removed)]
+    [real-added real-removed real-modified]))
 
 (defn sync-hook
   [req]
