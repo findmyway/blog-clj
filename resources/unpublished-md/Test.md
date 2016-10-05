@@ -1,6 +1,6 @@
 [toc]
 # 这个是测试
-<div id="tags">123,456</div>
+<div id="tags">Test</div>
 
 ## Paragraph 1
 
