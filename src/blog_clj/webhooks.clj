@@ -22,7 +22,7 @@
                                          (apply union
                                                 (map #(set (change-type %))
                                                      commits)))))
-        [added removed modified] (map get-changed-files [:added :removed :modified])
+        [added removed modified] (map #(set (get-changed-files %)) [:added :removed :modified])
         real-added (difference added removed)
         real-removed (difference removed added)
         real-modified (difference modified added removed)]
