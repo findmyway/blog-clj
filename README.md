@@ -4,15 +4,77 @@
 
 ## Prerequisites
 
-You will need [Leiningen][] 2.0.0 or above installed.
+首先需要安装 [Leiningen][] 2.0.0 或者更新的版本；然后还需要安装[redis][] 3.2.0或者更新的版本，部署的系统是Ubuntu 14.04。
 
 [leiningen]: https://github.com/technomancy/leiningen
+[redis]: http://redis.io/
 
-## Running
+## Introduction
 
-To start a web server for the application, run:
+src目录下文件的说明如下：
 
-    lein ring server
+```
+├── src
+│   └── blog_clj
+│       ├── handler.clj            ;; 用compojure处理请求
+│       ├── page_generators.clj    ;; 从redis里获取数据后填充template
+│       ├── parse.clj              ;; 解析markdown导出的html文件，提取meta信息
+│       ├── redis_io.clj           ;; 与redis交互的一些函数接口
+│       ├── schedules.clj          ;; 用于开启一些周期性的调度任务，暂时没用到，之前是规划着周期性fetch一些信息用的
+│       ├── sync.clj               ;; 用于把本地html文件同步到数据库中
+│       ├── upload_download.clj    ;; 处理些上传下载的任务
+│       └── webhooks.clj           ;; 处理github的webhook，同步文件的更新
+```
+
+需要说明的几点：
+
+1. 抛弃了以前直接从md文件渲染得到html文件的做法，原因很简单，clj下的markdown渲染库只找到了[markdown-clj][]这一个，但是支持的功能实在有限，作者更新得也比较慢，以我现在的水平自己重写一个还是需要花不少时间。而且本地写markdown文件现在用的是[MacDown][]，如何同步也是个挺麻烦的事，也考虑过直接与[MacDown][]交互，但没找到合适的接口，所以干脆直接解析html文件好了。
+2. 模板引擎方面，采用了[Enlive][]和[Hiccup][]，优点自然是template与data分离，这样不必像在[Django][]中一样在template中嵌入数据与逻辑。但[Enlive][]似乎作者不打算维护了，后期可能需要在[Hickory][]的基础上做一些封装，替换掉[Enlive][];
+
+[markdown-clj]: https://github.com/yogthos/markdown-clj
+[MacDown]: http://macdown.uranusjr.com/
+[Enlive]: https://github.com/cgrand/enlive
+[Hiccup]: https://github.com/weavejester/hiccup
+[Django]: https://www.djangoproject.com/
+[Hickory]: https://github.com/davidsantiago/hickory
+
+## Deploy
+
+首先，需要配置几个环境变量：
+
+```bash
+export qiniu_sk="XXX"
+export qiniu_ak="XXX"
+export html_path="/path/to/blog-clj/resources/published-html/"
+export upload_path="http://your-qiniu.qiniudn.com/upload/"
+
+# gitub仓库对应的webhook密码
+export github_webhook_secret="XXX" 
+```    
+
+然后，本地开发调试直接在根目录下运行``lein ring server``，修改代码后，server会自动重新reload对应的命名空间。
+
+部署的话，需要先编译``lein ring uberjar``，然后在``/etc/init``下添加个配置文件blog.conf，最后执行``start blog``即可。
+
+```
+description "Run my blog's jar"
+
+setuid deploy
+setgid deploy
+
+start on runlevel startup
+stop on runlevel shutdown
+
+respawn
+
+exec java -Xmx400m -Xms200m -jar /path/to/blog-clj/target/blog-clj-0.1.0-SNAPSHOT-standalone.jar
+```
+
+
+## TODO
+
+- [ ] log日志重定向到文件
+- [ ] 增加对错误异常的处理
 
 ## License
 
