@@ -56,7 +56,7 @@ export github_webhook_secret="XXX"
 
 部署的话，需要先编译``lein ring uberjar``，然后在``/etc/init``下添加个配置文件blog.conf，最后执行``start blog``即可。
 
-```
+```bash
 description "Run my blog's jar"
 
 setuid deploy
@@ -67,7 +67,14 @@ stop on runlevel shutdown
 
 respawn
 
+script
+export qiniu_sk="XXX"
+export qiniu_ak="XXX"
+export html_path="/path/to/blog-clj/resources/published-html/"
+export upload_path="http://your-qiniu.qiniudn.com/upload/"
+export github_webhook_secret="XXX" 
 exec java -Xmx400m -Xms200m -jar /path/to/blog-clj/target/blog-clj-0.1.0-SNAPSHOT-standalone.jar
+end script
 ```
 
 
