@@ -1,7 +1,7 @@
 (ns blog-clj.upload-download
-  [:require [clj.qiniu :as qiniu]
-   [environ.core :refer  [env]]
-   [clojure.string :as string]])
+  (:require [clj.qiniu :as qiniu]
+            [environ.core :refer  [env]]
+            [clojure.string :as string]))
 
 (def bucket "ontheroad")
 

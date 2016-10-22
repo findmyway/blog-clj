@@ -1,26 +1,26 @@
 (ns blog-clj.parse
-  (:use net.cgrand.enlive-html)
   (:require [hiccup.core :as hc]
             [clojure.string]
-            [clojure.java.io :as jio]))
+            [clojure.java.io :as jio]
+            [net.cgrand.enlive-html :as el :refer [defsnippet deftemplate]]))
 
 ;; highlight the navbar
 (defsnippet navbar-sp "templates/base.html"
   [:div.col-xs-3]
   [url-prefix]
-  [[:a (attr-has :href url-prefix)]] (add-class "active"))
+  [[:a (el/attr-has :href url-prefix)]] (el/add-class "active"))
 
 ;; fill blog-post title 
 (defsnippet blog-title "templates/base.html"
   [:h1.post-title]
   [blog-id blog-title]
-  [:a] (do-> (content blog-title)
-             (set-attr :href (str "/essays/" blog-id))))
+  [:a] (el/do-> (el/content blog-title)
+             (el/set-attr :href (str "/essays/" blog-id))))
 
 ;; generate blogroll sidebar
 (defn blogroll-sp
   [blogrolls]
-  (html [:div {:class "sidebar-container"}
+  (el/html [:div {:class "sidebar-container"}
          [:h1 "Blogroll"]
          (for [[url blog-name desc] blogrolls]
            [:p [:a {:href url} blog-name] [:span desc]])]))
@@ -28,7 +28,7 @@
 ;; generate archives sidebar
 (defn archives-sp
   [archives]
-  (html [:div {:class "sidebar-container"}
+  (el/html [:div {:class "sidebar-container"}
          [:h1 "Archives"]
          [:ul
           (for [[title id] archives]
@@ -37,7 +37,7 @@
 ;; generate tags sidebar
 (defn tags-sp
   [tag-list tag-type]
-  (html [:div {:class "sidebar-container"}
+  (el/html [:div {:class "sidebar-container"}
          [:h1 "Tags"]
          [:ul
           (for [[tag counts] tag-list]
@@ -48,10 +48,10 @@
 ;; generate toc sidebar
 (defn toc-sp
   [toc]
-  (html-snippet
+  (el/html-snippet
    (hc/html [:div {:class "sidebar-container"}
              [:h1 "TOC"]
-             (apply str (emit* toc))])))
+             (apply str (el/emit* toc))])))
 
 (defn blog-tag-sp
   [tags]
@@ -63,32 +63,32 @@
 (defn disqus-sp
   [page-url page-id]
   (let [disqus-template (.getResource  (clojure.lang.RT/baseLoader) "templates/disqus.html")]
-    (html-snippet (format (slurp disqus-template)
+    (el/html-snippet (format (slurp disqus-template)
                           page-url
                           page-id))))
 
 (deftemplate base-template "templates/base.html"
   [{:keys [nav-type blogroll archives all-blog-tags body title
            update-time create-time tags blog-id blog-url toc]}]
-  [:title] (content title)
-  [:div.blog-nav] (content (navbar-sp nav-type))
-  [:h1.post-title] (substitute (blog-title blog-id title))
-  [:span.update-time] (content update-time)
-  [:span.create-time] (content create-time)
-  [:span.blog-tags] (html-content (blog-tag-sp tags))
-  [:div.post-content] (content body)
-  [:div.post] (after (disqus-sp blog-url blog-id))
+  [:title] (el/content title)
+  [:div.blog-nav] (el/content (navbar-sp nav-type))
+  [:h1.post-title] (el/substitute (blog-title blog-id title))
+  [:span.update-time] (el/content update-time)
+  [:span.create-time] (el/content create-time)
+  [:span.blog-tags] (el/html-content (blog-tag-sp tags))
+  [:div.post-content] (el/content body)
+  [:div.post] (el/after (disqus-sp blog-url blog-id))
   ;; sidebars
-  [:div.sidebar] (do->
-                  (prepend (toc-sp toc))
-                  (append (blogroll-sp blogroll))
-                  (append (archives-sp archives))
-                  (append (tags-sp all-blog-tags "blog"))))
+  [:div.sidebar] (el/do->
+                  (el/prepend (toc-sp toc))
+                  (el/append (blogroll-sp blogroll))
+                  (el/append (archives-sp archives))
+                  (el/append (tags-sp all-blog-tags "blog"))))
 
 ; ============
 (defn search-tag-sp
   [tag blog-infos]
-  (html [:div {:class "content"}
+  (el/html [:div {:class "content"}
          [:h1 {:class "text-center"} (str "Tag:" tag)]
          [:p {:class "post-title"}
           (for [[title id] blog-infos]
@@ -96,20 +96,20 @@
 
 (deftemplate blogtag-search-template "templates/base.html"
   [tag blog-infos all-blog-tags]
-  [:div.content] (substitute (search-tag-sp tag blog-infos))
-  [:div.sidebar] (append (tags-sp all-blog-tags "blog")))
+  [:div.content] (el/substitute (search-tag-sp tag blog-infos))
+  [:div.sidebar] (el/append (tags-sp all-blog-tags "blog")))
 
 ; ============
 (defn about-sp
   []
   (let [about-html (.getResource (clojure.lang.RT/baseLoader) "templates/about.html")]
-    (html-snippet (slurp about-html))))
+    (el/html-snippet (slurp about-html))))
 
 (deftemplate about-template "templates/base.html"
   []
-  [:div.blog-nav] (content (navbar-sp "/about/"))
-  [:div.content] (substitute (about-sp)))
+  [:div.blog-nav] (el/content (navbar-sp "/about/"))
+  [:div.content] (el/substitute (about-sp)))
 
 (deftemplate page-404  "templates/base.html"
   []
-  [:div.content] (content "抱歉，最近网站做了一些调整，删除了部分内容，如果你对将要访问的内容非常感兴趣，请直接联系我~"))
+  [:div.content] (el/content "抱歉，最近网站做了一些调整，删除了部分内容，如果你对将要访问的内容非常感兴趣，请直接联系我~"))
