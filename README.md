@@ -54,27 +54,22 @@ export github_webhook_secret="XXX"
 
 然后，本地开发调试直接在根目录下运行``lein ring server``，修改代码后，server会自动重新reload对应的命名空间。
 
-部署的话，需要先编译``lein ring uberjar``，然后在``/etc/init``下添加个配置文件blog.conf，最后执行``start blog``即可。
+部署的话，需要先编译``lein ring uberjar``，采用Supervisor部署，一方面是因为Ubuntu下的Upstart配置了老半天，环境变量就是传不进去，很无奈；另一方面采用Supervisor可以让本地的(Mac)环境和线上的环境尽量一致，方便调试。
 
-```bash
-description "Run my blog's jar"
+1. 新建deploy用户, ``sudo adduser -m deploy && sudo passwd -l deploy``
+2. 将代码放在deploy用户的目录下
+3. 安装并运行Supervisor
+4. 在``/etc/supervisor/conf.d/blog.conf``写入以下内容，然后``supervisorctl reread && supervisorctl update && supervisorctl start blog``即可。
 
-setuid deploy
-setgid deploy
-
-start on runlevel startup
-stop on runlevel shutdown
-
-respawn
-
-script
-export qiniu_sk="XXX"
-export qiniu_ak="XXX"
-export html_path="/path/to/blog-clj/resources/published-html/"
-export upload_path="http://your-qiniu.qiniudn.com/upload/"
-export github_webhook_secret="XXX" 
-exec java -Xmx400m -Xms200m -jar /path/to/blog-clj/target/blog-clj-0.1.0-SNAPSHOT-standalone.jar
-end script
+```
+[program:blog]
+environment=qiniu_sk="XXX",qiniu_ak="XXX",html_path="/path/to/blog-clj/resources/published-html/",upload_path="/path/to/blog-clj/resources/published-html/",github_webhook_secret="XXX"
+command= java -jar target/blog-clj-0.1.0-SNAPSHOT-standalone.jar
+directory=/path/to/blog-clj
+autostart=true
+autorestart=true
+startretries=3
+user=deploy
 ```
 
 
@@ -82,6 +77,7 @@ end script
 
 - [ ] log日志重定向到文件
 - [ ] 增加对错误异常的处理
+- [ ] eastwood 静态检查
 
 ## License
 
