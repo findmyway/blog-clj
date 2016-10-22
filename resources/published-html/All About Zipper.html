@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="utf-8">
+<title>All About Zipper</title>
+
+
+
+</head>
+
+<body>
+
+<ul class="toc">
+<li>
+<a href="#toc_0">1. 什么是Zipper</a>
+</li>
+<li>
+<a href="#toc_1">2. 如何理解Zipper</a>
+</li>
+<li>
+<a href="#toc_2">3. List Zipper</a>
+</li>
+<li>
+<a href="#toc_3">4. Clojure中的zipper</a>
+<ul>
+<li>
+<a href="#toc_4">4.1 Clojure中提供的zipper类型与方法</a>
+</li>
+<li>
+<a href="#toc_5">4.2 如何扩展zippe到其它类型？</a>
+</li>
+<li>
+<a href="#toc_6">4.3 更高效的访问方法</a>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<div id="tags">DataStructure,OCaml,Clojure</div>
+
+<h1 id="toc_0">1. 什么是Zipper</h1>
+
+<p>根据Wikipedia上的<a href="https://en.wikipedia.org/wiki/Zipper_(data_structure)">解释</a>，zipper函数式编程语言中的一种数据结构，能够很方便地遍历和更新list, tree以及一些抽象的循环定义的结构。这个概念的特殊之处在于，函数式编程语言中对数据结构中某个元素的改变不会影响已有的变量，zipper要解决的就是在此条件下如何高效地查找和更新。</p>
+
+<h1 id="toc_1">2. 如何理解Zipper</h1>
+
+<p>最早关于zipper的介绍就是<a href="https://www.st.cs.uni-saarland.de/edu/seminare/2005/advanced-fp/docs/huet-zipper.pdf">FUNCTIONAL PEARL The Zipper</a>这篇paper。文章里用OCaml语言详细描述了两种数据结构，一种是list zipper，另一种是binary tree zipper（自己第一遍读这篇paper的时候，对第一个例子想了很久也没理解清楚，后来忽然发现其实就是list zipper的实现）。</p>
+
+<p>个人感觉一开始直接去理解zipper的概念并不太容易，先用church number这个简单的例子来加深下对\(\lambda\)演算的认识。</p>
+
+<p>根据Wikipedia上的<a href="https://en.wikipedia.org/wiki/Lambda_calculus">解释</a>，一个有效的\(\lambda\)算子包含以下3条规则：</p>
+
+<ol>
+<li>变量\(x\),就是最基础的一个\(\lambda\)算子</li>
+<li>\((\lambda x.t)\),（即输入为x，输出为t的匿名函数）</li>
+<li>\((ts)\),其中t和s都是\(\lambda\)算子，将t应用于s，得到的仍然是\(\lambda\)算子</li>
+</ol>
+
+<div><pre class="line-numbers"><code class="language-none">0 =&gt; λf.λx.x  
+1 =&gt; λf.λx.f x
+2 =&gt; λf.λx.f (f x)
+...</code></pre></div>
+
+<p>上面几行是wiki里常见的表示church number的一种方式。看着有点晕？根据前面的定义，我们把上面的表达式加点括号,然后变换下符号就好理解了：</p>
+
+<div><pre class="line-numbers"><code class="language-none">0 =&gt; (λt.(λx.x))        ;; 记作 C0
+1 =&gt; (λt.(λx.(tx)))     ;; 记作 C1
+2 =&gt; (λt.(λx.(t(tx))))  ;; 记作 C2</code></pre></div>
+
+<p>从上面可以看出，其实就是一个两层的匿名函数，上面的church number可以看做是<code>Ck t x</code>经过Currying之后的表示，其中Ck表示对应整数k的church数， t表示某种transform（可以理解为某种函数变换），x表示变量。假设t为<code>lambda x: x + 1</code>，x为0，那么church number就与整数一一对应了。</p>
+
+<p>本文并不打算对\(\lambda\)演算进行深入探讨，在这里引入church number的概念是为了说明，在函数式编程的概念中即使是整数n这样的基础数据类型也是通过递归来表示的。需要注意的是，递归的过程是有一个起点的，对于church number的例子起点就是C0，如果想要得到Ck，则需要递归调用k次运算得到。</p>
+
+<h1 id="toc_2">3. List Zipper</h1>
+
+<p><a href="https://www.st.cs.uni-saarland.de/edu/seminare/2005/advanced-fp/docs/huet-zipper.pdf">FUNCTIONAL PEARL The Zipper</a>中的第一个例子如下：</p>
+
+<div><pre class="line-numbers"><code class="language-ocaml">type tree = Item of item | Section of tree list;;
+type path = Top | Node of tree list * path * tree list;;</code></pre></div>
+
+<p>理解前面的church number之后，再加上一点点OCaml语法，就很好理解上面这两行代码，第一行首先递归定义了一个tree类型，其中<code>Item</code>是递归定义的起点，假设<code>item</code>的类型是int，下面几个例子都是tree的一些实例：</p>
+
+<div><pre class="line-numbers"><code class="language-ocaml">let t0 = Item (0)             (* 最基本的一个item *)
+let t1 = []                   (* 空的tree *)
+let t2 = Section [Item(1);Item(2);Item(3);Item(4)]  
+(* 一个Section, 其中每个元素都是一个Item *)
+
+let t3 = Section [
+    Section [Item(1);
+        Section [Item(1)]];
+    Section [Item(2);Item(2)];
+    Section [Item(3);Item(3)]]
+(* 一个Section中包含了3个Section，每个Section都是可以嵌套的 *)</code></pre></div>
+
+<p>第二行代码中的<code>path</code>类型就是一个tupple，包含3个元素，第一个元素是以tree为元素的列表，第二个元素是递归的path（起点是Top）,第三个元素仍然是以tree为元素的列表。下面仍然给出几个实例：</p>
+
+<div><pre class="line-numbers"><code class="language-ocaml">let p0 = Node([], Top, [])    (* 最基础的一个path，左边和右边的元素都是空列表，中间是起点元素Top *)
+let p1 = Node (t0, p0, t0)     
+let p2 = Node (t1, p1, t2)</code></pre></div>
+
+<p>有了<code>tree</code>和<code>path</code>两个类型之后，就可以得到一个list zipper的类型了：</p>
+
+<div><pre class="line-numbers"><code class="language-ocaml">type location = Loc of tree * path</code></pre></div>
+
+<p>这里location是一个长度为2的tupple，包含<code>tree</code>和<code>path</code>。一个location本质是很自由的，其中的<code>tree</code>和<code>path</code>都可以是任意实现，通过对二者做一些限制，即可得到一个list zipper的实现。</p>
+
+<p>从最简单的开始，一个最小list zipper的定义就是<code>Loc (Item(0), Top)</code>，从本质上讲，list zipper 是一种状态描述的结构，这里用paper中的一个例子来描述状态的变化过程。表达式<code>((a * b) + (c * d))</code>用前面定义的tree类型来表示就是</p>
+
+<div><pre class="line-numbers"><code class="language-none">let t0 = Section [
+    Section [Item(a); Item(*); Item(b)];
+    Item(+);
+    Section [Item(c); Item(*); Item(d)];]</code></pre></div>
+
+<p>此时，t0是最顶层的tree，定义此时的path为<code>Top</code>，便得到了t0对应的location为<code>let l0 = Loc (t0, Top)</code>。list zipper 定义了如下遍历规则：</p>
+
+<ul>
+<li><code>go_down</code>，就是指从当前location往更深一层走，location的第一个元素tree如果是一个Item的话会报错（没有更深的一层了），否则就是一个list，对其解构取出其元素<code>[t_first; t_rest]</code>，其中t<em>first构成新location中的tree元素，<code>let p_new = Node ([],p,t_rest)</code>则构成新location中的path元素。这里p表示上一层location中的path，左边的空list<code>[]</code>表示当前Section中t</em>first左边的tree（显然为空），t<em>rest则表示当前Section中t</em>first右侧的tree。相关的OCaml代码表示可以从paper中找到。对<code>l0</code>执行<code>go_down</code>操作后，可以得到<code>let l1 = Loc (Section [Item(a), Item(*), Item(b)], Node([], Top, [Item(+); Section [Item(c); Item(*); Item(d)]))</code></li>
+<li><code>go_up</code>则是<code>go_down</code>的逆操作。对当前location中的path元素解构得到<code>(left, p_up, right)</code>，取出left和right与当前location中的tree元素拼接得到新的tree_up（left需要翻转）。</li>
+<li><code>go_right</code>，把当前location中path解构后，得到<code>(left, p, r::r_rest)</code>，取出其中的r作为新location的tree，然后当前location中的tree拼接到left上，这样得到了新的location <code>Node(r, (tree::left, p, r_rest))</code>。对前面的<code>l1</code>应用<code>go_right</code>后得到<code>let l2 = Loc (Item(+), Node([Section [Item(a), Item(*), Item(b)], Top, Section [Item(c); Item(*); Item(d)]))</code></li>
+<li><code>go_left</code>也就是<code>go_right</code>`的逆操作。需要注意处理边界情况。</li>
+</ul>
+
+<p>可视化的描述可以看下图：</p>
+
+<p><img src="../public/zipper_0.svg" alt="zipper_0"></p>
+
+<h1 id="toc_3">4. Clojure中的zipper</h1>
+
+<p>Clojure中的提供了一个<a href="https://clojuredocs.org/clojure.zip">clojure.zip</a>模块。与OCaml中的实现稍微有些不同，由于Clojure是动态类型的，并没有类似循环定义的结构类型，因此在<a href="https://clojuredocs.org/clojure.zip">clojure.zip</a>库中默认提供了3类zipper（seq-zip, vec-zip, xml-zip），实际上前面说了zipper的思想可以在任何递归的结构中应用，后面会提到如何在clojure中扩充数据结构类型。</p>
+
+<p>在Clojure中，一个zipper的基本形式如下：</p>
+
+<div><pre class="line-numbers"><code class="language-clojure">[node  ;; 这里node可以是seq, vec 或者是其它递归的结构
+  {:l left_nodes  ;; 当前层级下当前node左侧的nodes
+   :r right_nodes  ;; 同理，当前层级下当前node右侧的nodes
+   :pnodes nodes_from_root_to_up  ;; 从root node开始，一直到当前node的父node的列表
+   :ppath  ;; 递归定义，与前面的思想一致
+  }]</code></pre></div>
+
+<h2 id="toc_4">4.1 Clojure中提供的zipper类型与方法</h2>
+
+<p><a href="https://clojuredocs.org/clojure.zip">clojure.zip</a>中包含了以下几类操作zipper的方法：</p>
+
+<ol>
+<li>遍历：next, prev, up, down, left, right, children, lefts, rights, rightmost, leftmost</li>
+<li>查询：node, path, </li>
+<li>更新：edit, replace</li>
+<li>插入/删除: insert-child, insert-left, insert-right, remove</li>
+<li>判断： branch?, end?</li>
+</ol>
+
+<p>比较有意思的一个实现是<code>end?</code>，用来判断<code>next</code>的结果是否到达终点。可以先看个例子：</p>
+
+<div><pre class="line-numbers"><code class="language-clojure-repl">user=&gt; (zip/vector-zip [])
+[[] nil]
+user=&gt; (zip/next (zip/vector-zip []))
+[[] :end]</code></pre></div>
+
+<p>其实就是在<code>next</code>的时候加入了一些判断，因为<code>next</code>的实现是深度优先的，最后会回到root，然后把path设为<code>:end</code>这样每次next的时候用<code>end?</code>判断下遍历是否结束。另外需要注意的一个是<code>remove</code>，默认会返回根据深度优先排序当前location的前一个location。</p>
+
+<h2 id="toc_5">4.2 如何扩展zippe到其它类型？</h2>
+
+<p>zipper的思想可以扩展到很多其他类型的数据结构。在<a href="https://clojuredocs.org/clojure.zip">clojure.zip</a>中提供了<a href="https://github.com/clojure/clojure/blob/59b65669860a1f33825775494809e5d500c19c63/src/clj/clojure/zip.clj#L18">zipper</a>函数来构建新的zipper类型，这样就可以使用各种遍历更新的函数了。其中，需要提供一下几个函数：</p>
+
+<ol>
+<li><code>branch?</code>，判断一个node是不是还能有children（可以为空）</li>
+<li><code>children</code>，给定一个可以branch类型的node，返回seq类型的children</li>
+<li><code>make-node</code>，给定一个node和children，返回新的node</li>
+<li><code>root</code>，即root node</li>
+</ol>
+
+<p>在<a href="https://github.com/davidsantiago/hickory/blob/master/src/hickory/zip.cljx">hickory</a>中有一个<code>hiccup-zip</code>的实现，可以学习下如何进行扩展的。</p>
+
+<h2 id="toc_6">4.3 更高效的访问方法</h2>
+
+<p>尽管<a href="https://clojuredocs.org/clojure.zip">clojure.zip</a>库中提供了很丰富的遍历和更新函数，但是，想要优雅地修改递归类型的结构仍然是件很繁琐的事，很多时候都需要动手写<code>loop ... recur ...</code>，通常认为这样的操作是比较底层的。</p>
+
+<p><a href="https://github.com/nathanmarz/specter">specter</a>就是用来提供高效访问的，其中对zipper类型的数据也提供了很好的接口，能够写出更简洁高效的代码。</p>
+
+
+
+<script type="text/x-mathjax-config">
+(function () {
+
+MathJax.Hub.Config({
+	'showProcessingMessages': false,
+	'messageStyle': 'none'
+});
+
+if (typeof MathJaxListener !== 'undefined') {
+	MathJax.Hub.Register.StartupHook('End', function () {
+		MathJaxListener.invokeCallbackForKey_('End');
+	});
+}
+
+})();
+</script>
+
+<script type="text/javascript" src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+</body>
+
+</html>
