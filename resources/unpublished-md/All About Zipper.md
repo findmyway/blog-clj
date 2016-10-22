@@ -10,7 +10,7 @@
 
 最早关于zipper的介绍就是[FUNCTIONAL PEARL The Zipper][]这篇paper。文章里用OCaml语言详细描述了两种数据结构，一种是list zipper，另一种是binary tree zipper（自己第一遍读这篇paper的时候，对第一个例子想了很久也没理解清楚，后来忽然发现其实就是list zipper的实现）。
 
-个人感觉一开始直接去理解zipper的概念并不太容易，先用church number这个简单的例子来加深下对$\lambda$演算的认识。
+个人感觉一开始直接去理解zipper的概念并不太容易，先用Church number这个简单的例子来加深下对$\lambda$演算的认识。
 
 根据Wikipedia上的[解释](https://en.wikipedia.org/wiki/Lambda_calculus)，一个有效的$\lambda$算子包含以下3条规则：
 
@@ -26,7 +26,7 @@
 ...
 ```
 
-上面几行是wiki里常见的表示church number的一种方式。看着有点晕？根据前面的定义，我们把上面的表达式加点括号,然后变换下符号就好理解了：
+上面几行是wiki里常见的表示Church number的一种方式。看着有点晕？根据前面的定义，我们把上面的表达式加点括号,然后变换下符号就好理解了：
 
 ```
 0 => (λt.(λx.x))        ;; 记作 C0
@@ -34,9 +34,9 @@
 2 => (λt.(λx.(t(tx))))  ;; 记作 C2
 ```
 
-从上面可以看出，其实就是一个两层的匿名函数，上面的church number可以看做是``Ck t x``经过Currying之后的表示，其中Ck表示对应整数k的church数， t表示某种transform（可以理解为某种函数变换），x表示变量。假设t为``lambda x: x + 1``，x为0，那么church number就与整数一一对应了。
+从上面可以看出，其实就是一个两层的匿名函数，上面的Church number可以看做是``Ck t x``经过Currying之后的表示，其中Ck表示对应整数k的Church数， t表示某种transform（可以理解为某种函数变换），x表示变量。假设t为``lambda x: x + 1``，x为0，那么Church number就与整数一一对应了。
 
-本文并不打算对$\lambda$演算进行深入探讨，在这里引入church number的概念是为了说明，在函数式编程的概念中即使是整数n这样的基础数据类型也是通过递归来表示的。需要注意的是，递归的过程是有一个起点的，对于church number的例子起点就是C0，如果想要得到Ck，则需要递归调用k次运算得到。
+本文并不打算对$\lambda$演算进行深入探讨，在这里引入Church number的概念是为了说明，在函数式编程的概念中即使是整数n这样的基础数据类型也是通过递归来表示的。需要注意的是，递归的过程是有一个起点的，对于Church number的例子起点就是C0，如果想要得到Ck，则需要递归调用k次运算得到。
 
 # 3. List Zipper
 
@@ -46,7 +46,7 @@
 type tree = Item of item | Section of tree list;;
 type path = Top | Node of tree list * path * tree list;;
 ```
-理解前面的church number之后，再加上一点点OCaml语法，就很好理解上面这两行代码，第一行首先递归定义了一个tree类型，其中``Item``是递归定义的起点，假设``item``的类型是int，下面几个例子都是tree的一些实例：
+理解前面的Church number之后，再加上一点点OCaml语法，就很好理解上面这两行代码，第一行首先递归定义了一个tree类型，其中``Item``是递归定义的起点，假设``item``的类型是int，下面几个例子都是tree的一些实例：
 
 ```ocaml
 let t0 = Item (0)             (* 最基本的一个item *)
