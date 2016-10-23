@@ -13,6 +13,7 @@
   (GET "/" [] (gen-blog-page "/essays/"))
   (GET "/about/" [] (gen-about-page))
   (GET "/essays/:blog-id" [blog-id :as {uri :uri}] (gen-blog-page blog-id uri))
+  (GET "/essays/:blog-id/" [blog-id :as {uri :uri}] (gen-blog-page blog-id uri))
   (GET "/search/" [tag-type tag] (gen-blogtag-search-page tag tag-type))
   (GET "/rss/" [] (gen-rss))
   (POST "/github-webhooks/" req (sync-hook req))
