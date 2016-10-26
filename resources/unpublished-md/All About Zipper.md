@@ -158,3 +158,7 @@ zipper的思想可以扩展到很多其他类型的数据结构。在[clojure.zi
 
 [specter]:https://github.com/nathanmarz/specter
 [FUNCTIONAL PEARL The Zipper]:https://www.st.cs.uni-saarland.de/edu/seminare/2005/advanced-fp/docs/huet-zipper.pdf
+
+# 5 参考
+
+- [Tree visitors in Clojure](http://www.ibm.com/developerworks/library/j-treevisit/)
