@@ -79,6 +79,10 @@ user=deploy
 - [ ] 增加对错误异常的处理
 - [ ] eastwood 静态检查
 
+## Resources
+
+- [Easily Deploy Your Clojure Web Site](http://www.braveclojure.com/quests/deploy/)
+
 ## License
 
 ```
