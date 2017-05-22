@@ -72,7 +72,7 @@ $$
 MCMC和HMC的解释很直观。关于采样链（Chain），有效采样个数等都有说明。
 开篇提到的Good King的例子很好玩，我也重写了下：
 
-```clojure
+```scheme
 
 (def N 10)
 (def counts (vec (range 1 (inc N))))
