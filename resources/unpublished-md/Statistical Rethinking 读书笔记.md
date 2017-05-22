@@ -1,3 +1,8 @@
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
 [toc]
 
 <div id="tags">Book</div>
@@ -13,6 +18,8 @@
 ##Chapter 2
 提纲挈领的一部分。作者用small worlds类比观测到的世界，而large worlds则对应真实世界，我们无法知道真实世界是怎样的，只能根据观测到的世界去修正我们的猜测，由此引出了先验、似然和后验的概念。这章最核心的是要理解quadratic approximation，作者用`map`函数对其作了封装，前面几章会频繁用到。
 
+关于MAP、ML等有个很不错的[介绍材料](https://engineering.purdue.edu/kak/Tutorials/Trinity.pdf)可以参考。
+
 ##Chapter 3
 理解HDPI的概念，可以尝试自己动手实现下这个函数，比我想象中要简单。可以参考下[这里](http://stackoverflow.com/questions/22284502/highest-posterior-density-region-and-central-credible-region)
 
@@ -26,21 +33,37 @@
 过拟合和欠拟合，一个经典问题。作者的出发点很新奇，从信息熵的角度出发，把交叉熵、KL散度、（样本内/样本外）偏差联系了起来，然后引入正则先验的概念。本章最关键的是信息准则，这对于我来说是个全新的概念，后面几章中都反复用到该指标进行模型比较和评估等。
 
 信息熵的表示如下：
-$$H(p) = -\sum_{i=1}^{n}p_i log(p_i)$$
+$$
+\begin{equation}
+H(p) = -\sum_{i=1}^{n}p_i log(p_i)
+\label{entropy}
+\end{equation}
+$$
 稍微改写下形式：
-$$H(p) = \mathbb{E}H(p_i)$$
+$$
+\begin{equation}
+H(p) = \mathbb{E}H(p_i)
+\end{equation}
+$$
 其中$\mathbb{E}$表示求期望，$H(p_i)=log(\frac{1}{p_i})$，其含义是概率越低信息量越大，求log是为了保证相互独立事件的信息量之和等于这些事件同时发生的信息量。
 
 > **K-L散度**：用一个分布去描述另一个分布时引入的不确定性。
 
 ![屏幕快照 2017-05-06 19.00.39.png](../public/Statistical-Rethinking-1.png)
 
-$$\begin{split}
+$$
+\begin{equation}
+\begin{split}
 D_{KL}(p,q) & = H(p,q) - H(p) \\
  & = -\sum_{i}p_i log(q_i)  - \left(- \sum_{i}p_i log(p_i) \right) \\
  & = - \sum_i p_i \left(log(q_i) - log(p_i) \right)
- \end{split}$$
-其中$H(p,q)$表示**交叉熵**
+ \end{split}
+\label{klexplained}
+\end{equation}
+$$
+式子$\eqref{klexplained}$中的$H(p,q)$表示**交叉熵**。
+
+关于KL散度，有一篇[博客](https://www.countbayesie.com/blog/2017/5/9/kullback-leibler-divergence-explained)写得更详细写，可以参考。
 
 ##Chapter 7
 这一章重点分析了多个变量之间存在相互影响时的情况，感觉自己在做数据分析的时候，好像经常忽略了这点。
