@@ -128,7 +128,7 @@ D_{KL}(p,q) &amp; = H(p,q) - H(p) \\
 <p>MCMC和HMC的解释很直观。关于采样链（Chain），有效采样个数等都有说明。
 开篇提到的Good King的例子很好玩，我也重写了下：</p>
 
-<div><pre><code class="language-scheme">
+<div><pre><code class="language-clojure">
 (def N 10)
 (def counts (vec (range 1 (inc N))))
 
@@ -155,7 +155,7 @@ D_{KL}(p,q) &amp; = H(p,q) - H(p) \\
 
 <p>简单介绍了下广义线性模型，理解这里提到的两类连结函数，本质上是将参数从不同的值域映射到\([-\infty,+\infty]\)，留意其中参数的可解释性。</p>
 
-<p>后面几章中看得比较粗略，主要关注了下多层模型、零膨胀问题和缺失值的问题。</p>
+<p>后面几章中看得比较粗略，我主要看了下多层模型、零膨胀问题和缺失值的问题。</p>
 
 
 
