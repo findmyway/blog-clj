@@ -61,6 +61,7 @@ D_{KL}(p,q) & = H(p,q) - H(p) \\
 \label{klexplained}
 \end{equation}
 $$
+
 式子$\eqref{klexplained}$中的$H(p,q)$表示**交叉熵**。
 
 关于KL散度，有一篇[博客](https://www.countbayesie.com/blog/2017/5/9/kullback-leibler-divergence-explained)写得更详细写，可以参考。
@@ -75,7 +76,6 @@ MCMC和HMC的解释很直观。关于采样链（Chain），有效采样个数�
 开篇提到的Good King的例子很好玩，我也重写了下：
 
 ```clojure
-
 (def N 10)
 (def counts (vec (range 1 (inc N))))
 
