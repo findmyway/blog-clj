@@ -7,7 +7,7 @@ MathJax.Hub.Config({
 
 <div id="tags">Algorithm</div>
 
-# 深入理解变分推断
+本文主要记录自己在学习[Automatic Differentiation Variational Inference](https://arxiv.org/abs/1603.00788)过程中的一些参考资料和理解。
 
 ## 熵（Entropy）
 
@@ -156,7 +156,7 @@ $$
 
 ## Variational Autoencoder
 
-关于VAE的文章很多，这里就不详细介绍了。[VAE][]的原文不太好读懂，建议先读[Tutorial on Variational Autoencoders][]，然后可以看看一些代码实现，比如[Variational Autoencoder: Intuition and Implementation](http://wiseodd.github.io/techblog/2016/12/10/variational-autoencoder/)，和这里[Variational Autoencoders Explained](http://kvfrans.com/variational-autoencoders-explained/)
+关于VAE的文章很多，这里就不详细介绍了。[VAE][]的原文不太好读懂，建议先读[Tutorial on Variational Autoencoders][]，然后可以看看一些代码实现，比如[Variational Autoencoder: Intuition and Implementation](http://wiseodd.github.io/techblog/2016/12/10/variational-autoencoder/)，和这里[Variational Autoencoders Explained](http://kvfrans.com/variational-autoencoders-explained/)。
 
 ## Read More
 
