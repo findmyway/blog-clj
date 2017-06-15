@@ -107,7 +107,7 @@ p(\boldsymbol{x}) = \int p(\boldsymbol{z}, \boldsymbol{x})d\boldsymbol{z}
 \end{equation}
 $$
 
-变分推断背后的思想是，用一些简单的参数化分布（记为$Q_{\phi}(\boldsymbol{z} | \boldsymbol{x})$）去拟合后验分布$P(\boldsymbol{z}|\boldsymbol{x})$，通过调整参数$\phi$使得$Q_{\phi}$尽可能接近$P(\boldsymbol{z}|\boldsymbol{x})$，从而转换成优化问题。衡量二者相似度的方法之一就是用前面提到的KL散度，按理说，我们应该最小化$KL(P,Q)$，不过实际使用中通常是最小化$KL(Q,P)$，前面也介绍了，二者实际上是不同的，可以参考阅读[A Beginner's Guide to Variational Methods: Mean-Field Approximation][]一文中的*Forward KL vs. Reverse KL*部分来了解为什么优化$KL(Q,P)$。
+变分推断背后的思想是，用一些简单的参数化分布（记为$Q_{\phi}(\boldsymbol{z} | \boldsymbol{x})$）去拟合后验分布$P(\boldsymbol{z}|\boldsymbol{x})$，通过调整参数$\phi$使得$Q_{\phi}$尽可能接近$P(\boldsymbol{z}|\boldsymbol{x})$，从而转换成优化问题。衡量二者相似度的方法之一就是用前面提到的KL散度，按理说，我们应该最小化$KL(P,Q)$，不过实际使用中通常是最小化$KL(Q,P)$，前面也介绍了，二者实际上是不同的，可以参考阅读[A Beginner's Guide to Variational Methods: Mean-Field Approximation][]一文中的*Forward KL vs. Reverse KL*和[KL Divergence: Forward vs Reverse?](http://wiseodd.github.io/techblog/2016/12/21/forward-reverse-kl/)部分来了解为什么优化$KL(Q,P)$。
 
 $$
 \begin{equation}
@@ -154,9 +154,11 @@ $$
 
 上面式左边是证据，由于KL散度大于等于0，因而右边的第二项ELBO也就称作证据下界。
 
+## Variational Autoencoder
 
+关于VAE的文章很多，这里就不详细介绍了。[VAE][]的原文不太好读懂，建议先读[Tutorial on Variational Autoencoders][]，然后可以看看一些代码实现，比如[Variational Autoencoder: Intuition and Implementation](http://wiseodd.github.io/techblog/2016/12/10/variational-autoencoder/)，和这里[Variational Autoencoders Explained](http://kvfrans.com/variational-autoencoders-explained/)
 
-## Reference
+## Read More
 
 - [A Beginner's Guide to Variational Methods: Mean-Field Approximation][]
 - [Variational Coin Toss](http://www.openias.org/variational-coin-toss)
@@ -165,3 +167,5 @@ $$
 [Gibb's inequality]:https://en.wikipedia.org/wiki/Gibbs%27_inequality
 [SR]:https://book.douban.com/subject/26607925/
 [A Beginner's Guide to Variational Methods: Mean-Field Approximation]:http://blog.evjang.com/2016/08/variational-bayes.html
+[Tutorial on Variational Autoencoders]:https://arxiv.org/abs/1606.05908
+[VAE]:https://arxiv.org/abs/1312.6114
