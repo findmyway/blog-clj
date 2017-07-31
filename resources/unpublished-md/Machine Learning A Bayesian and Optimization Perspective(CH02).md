@@ -159,6 +159,16 @@ Suppose $Var(X_i) = \sigma^2$, so we have $Var(\bar{X})=\sigma^2/n$, when $n \to
 
 Let $f(x) = \ln x -x + 1$, the first order is $f'(x) = 1/x - 1$, so we have $f(x) \ge f(1) = 0$.
 
+## P2.12
+
+$$\begin{equation}
+\begin{split}
+I(x,y) &= \sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}}P(x,y) \log {\frac{P(x,y)}{P(x)P(y)}} \\
+&= - \sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}}P(x,y) \log {\frac{P(x)P(y)}{P(x,y)}} \\
+& \ge - \sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}} P(x,y)\left(\frac{P(x)P(y)}{P(x,y)} -1\right) \\
+\end{split}
+\end{equation}$$
+
 ## P2.13
 
 $$
