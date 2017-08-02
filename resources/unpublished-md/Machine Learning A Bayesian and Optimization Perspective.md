@@ -7,13 +7,15 @@ MathJax.Hub.Config({
 
 <div id="tags">Book</div>
 
-# Machine Learning A Bayesian and Optimization Perspective 读书笔记（CH02）
+# Machine Learning A Bayesian and Optimization Perspective 读书笔记
+
+## CH02
 
 这一章先回顾了些基础知识，主要是概率和信息论里的基础，顺带复习了下《概率统计》那本书。2.4节的随机过程没太看懂，这块要补一补相关的基础，以后需要的时候再回头来看看。
 
 下面是我写的部分习题的解答。
 
-## P2.1
+### P2.1
 
 
 $$\begin{equation}
@@ -29,7 +31,7 @@ Var(X) &= \sum_{i=1}^n Var(X_i) \\
 \end{split}
 \end{equation}$$
 
-## P2.2
+### P2.2
 
 $$\begin{equation}
 E(X) = \int_a^b x \frac{1}{b-a} \, dx = \frac{a+b}{2}
@@ -44,11 +46,11 @@ Var(X) &= E(X^2) - (E(X))^2 \\
 \end{split}
 \end{equation}$$
 
-## P2.3
+### P2.3
 
 See the Appendix A.1 in [http://cs229.stanford.edu/section/gaussians.pdf](http://cs229.stanford.edu/section/gaussians.pdf)
 
-## P2.4
+### P2.4
 
 The definition of beta function is given by:
 
@@ -110,7 +112,7 @@ $$\begin{equation}
 Var(X) = E(X^2) -(E(X))^2 =\frac{\alpha \beta}{(\alpha + \beta)^2(\alpha + \beta + 1)}
 \end{equation}$$
 
-## P2.5
+### P2.5
 
 Bellow I will show that $\eqref{beta_eq_gamma}$ and $\eqref{beta_eq}$ are equal:
 $$
@@ -130,7 +132,7 @@ $$\begin{split}
 &= \int_0^{1} \mu^{a-1} (1-\mu)^{b-1} \, d\mu \cdot \Gamma(a+b)
 \end{split}$$
 
-## P2.6
+### P2.6
 
 $$\begin{equation}
 \begin{split}
@@ -147,19 +149,19 @@ E(X^2) &= \frac{(a+1)a}{b^2}  \\
 Var(X) &=E(X^2)-(E(X))^2 = \frac{a}{b^2}
 \end{align}$$
 
-## P2.7
+### P2.7
 
 See [http://www.mas.ncl.ac.uk/~nmf16/teaching/mas3301/week6.pdf](http://www.mas.ncl.ac.uk/~nmf16/teaching/mas3301/week6.pdf) for details.
 
-## P2.8
+### P2.8
 
 Suppose $Var(X_i) = \sigma^2$, so we have $Var(\bar{X})=\sigma^2/n$, when $n \to \infty$, $Var(\bar{X}) \to 0$.
 
-## P2.11
+### P2.11
 
 Let $f(x) = \ln x -x + 1$, the first order is $f'(x) = 1/x - 1$, so we have $f(x) \ge f(1) = 0$.
 
-## P2.12
+### P2.12
 
 $$\begin{equation}
 \begin{split}
@@ -169,7 +171,7 @@ I(x,y) &= \sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}}P(x,y) \log {\frac{P(
 \end{split}
 \end{equation}$$
 
-## P2.13
+### P2.13
 
 $$
 \begin{equation}
@@ -182,6 +184,49 @@ $$
 \end{equation}
 $$
 
-## P2.15 
+### P2.15 
 
 See [https://stats.stackexchange.com/questions/66108/](https://stats.stackexchange.com/questions/66108/why-is-entropy-maximised-when-the-probability-distribution-is-uniform) for details.
+
+## CH03
+
+这一章先从参数估计入手，介绍了参数视角下的线性回归和分类问题，作者提到了本书重点关注有监督的问题，无监督的问题没有涉及。
+
+下面是我写的部分习题的解答。
+
+### P3.1
+
+$$\begin{equation}
+\begin{split}
+\sigma_c^2 &= Var(\hat{\theta}) \\
+&= Var(\frac{1}{m} \sum_{i=1}^{m} \hat{\theta}_i) \\
+&= \frac{1}{m^2} \sum_{i=1}^{m} Var(\hat{\theta}_i) \\
+&= \frac{1}{m} \sigma^2
+\end{split}
+\end{equation}$$
+
+### P3.2 & P3.3
+
+See [http://willett.ece.wisc.edu/wp-uploads/2016/01/15-MVUE.pdf](http://willett.ece.wisc.edu/wp-uploads/2016/01/15-MVUE.pdf) for details.
+
+### P3.4
+
+According to the quadratic formula, we can easily get the inequation.
+
+### P3.5
+
+By taking the derivative of $MSE(\hat{\theta}_b)$ with respect to $\alpha$, we let:
+
+$$\begin{equation}
+2(1+\alpha)MSE(\hat{\theta}_{MVU}) + 2\hat{\theta}_o^2 \alpha = 0
+\end{equation}$$
+
+and then we get:
+
+$$\begin{equation}
+\alpha_* = - \frac{MSE(\hat{\theta}_{MVU})}{MSE(\hat{\theta}_{MVU}) + \hat{\theta}_o^2} = - \frac{1}{1+\frac{\hat{\theta}_o^2}{MSE(\hat{\theta}_{MVU})}}
+\end{equation}$$
+
+### P3.6
+
+Since the expectation in Eq 3.26 is taken with respect to $p(\mathcal{X};\theta)$, if the integration and differentiation can be interchanged, we can first take the integration of $p(\mathcal{X};\theta)$, resulting Eq 3.26
