@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+<title>Machine Learning A Bayesian and Optimization Perspective</title>
+
+
+
+</head>
+
+<body>
+
+<script type="text/x-mathjax-config">
+MathJax.Hub.Config({
+  TeX: { equationNumbers: { autoNumber: "AMS" } }
+});
+</script>
+
+<ul class="toc">
+<li>
+<a href="#toc_0">Machine Learning A Bayesian and Optimization Perspective 读书笔记</a>
+<ul>
+<li>
+<a href="#toc_1">CH02</a>
+<ul>
+<li>
+<a href="#toc_2">P2.1</a>
+</li>
+<li>
+<a href="#toc_3">P2.2</a>
+</li>
+<li>
+<a href="#toc_4">P2.3</a>
+</li>
+<li>
+<a href="#toc_5">P2.4</a>
+</li>
+<li>
+<a href="#toc_6">P2.5</a>
+</li>
+<li>
+<a href="#toc_7">P2.6</a>
+</li>
+<li>
+<a href="#toc_8">P2.7</a>
+</li>
+<li>
+<a href="#toc_9">P2.8</a>
+</li>
+<li>
+<a href="#toc_10">P2.11</a>
+</li>
+<li>
+<a href="#toc_11">P2.12</a>
+</li>
+<li>
+<a href="#toc_12">P2.13</a>
+</li>
+<li>
+<a href="#toc_13">P2.15</a>
+</li>
+</ul>
+</li>
+<li>
+<a href="#toc_14">CH03</a>
+<ul>
+<li>
+<a href="#toc_15">P3.1</a>
+</li>
+<li>
+<a href="#toc_16">P3.2 &amp; P3.3</a>
+</li>
+<li>
+<a href="#toc_17">P3.4</a>
+</li>
+<li>
+<a href="#toc_18">P3.5</a>
+</li>
+<li>
+<a href="#toc_19">P3.6</a>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+
+<div id="tags">Book</div>
+
+<h1 id="toc_0">Machine Learning A Bayesian and Optimization Perspective 读书笔记</h1>
+
+<p>个人感觉这本书的覆盖面有点广，更适合有一定基础之后在回过头来读。暂时先看完了2，3，4章，打个卡，后面有机会再继续读这本书。</p>
+
+<h2 id="toc_1">CH02</h2>
+
+<p>这一章先回顾了些基础知识，主要是概率和信息论里的基础，顺带复习了下《概率统计》那本书。2.4节的随机过程没太看懂，这块要补一补相关的基础，以后需要的时候再回头来看看。</p>
+
+<p>下面是我写的部分习题的解答。</p>
+
+<h3 id="toc_2">P2.1</h3>
+
+<p>\[\begin{equation}
+E(X) = \sum_{i=1}^n E(X_i) = np
+\end{equation}\]</p>
+
+<p>\[\begin{equation}
+\begin{split}
+Var(X) &amp;= \sum_{i=1}^n Var(X_i) \\
+       &amp;= n\,Var(X_i) \\
+       &amp;= n \left( E(X_i^2) - (E(X_i))^2\right) \\
+       &amp;= n(p - p^2)
+\end{split}
+\end{equation}\]</p>
+
+<h3 id="toc_3">P2.2</h3>
+
+<p>\[\begin{equation}
+E(X) = \int_a^b x \frac{1}{b-a} \, dx = \frac{a+b}{2}
+\end{equation}\]</p>
+
+<p>\[\begin{equation}
+\begin{split}
+Var(X) &amp;= E(X^2) - (E(X))^2 \\
+       &amp;= \int_a^b x^2 \frac{1}{b-a} \, dx - \left( \frac{a+b}{2}\right) ^ 2\\
+     &amp;= \frac{a^2 + ab + b^2}{3}  - \frac{a^2 + 2ab + b^2}{4} \\
+     &amp;= \frac{a^2 -2ab + b^2}{12}
+\end{split}
+\end{equation}\]</p>
+
+<h3 id="toc_4">P2.3</h3>
+
+<p>See the Appendix A.1 in <a href="http://cs229.stanford.edu/section/gaussians.pdf">http://cs229.stanford.edu/section/gaussians.pdf</a></p>
+
+<h3 id="toc_5">P2.4</h3>
+
+<p>The definition of beta function is given by:</p>
+
+<p>\[\begin{equation}
+B(\alpha, \beta) = \int_0^1 x^{\alpha-1} (1-x)^{\beta - 1}\, dx
+\label{beta_eq}
+\end{equation}\]</p>
+
+<p>And we have:</p>
+
+<p>\[\begin{equation}
+B(\alpha, \beta) = \frac{\Gamma(\alpha) \Gamma(\beta)}{\Gamma(\alpha + \beta)}
+\label{beta_eq_gamma}
+\end{equation}\]</p>
+
+<p>The Beta distribution is:</p>
+
+<p>\[\begin{equation}
+f(x \mid \alpha, \beta) = \left\{\begin{matrix}
+\frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} x^{\alpha -1}(1-x)^{\beta - 1} &amp; for \; 0\lt x \lt1 \\ 
+0 &amp; otherwise.
+\end{matrix}\right.
+\end{equation}
+\]</p>
+
+<p>So we get:</p>
+
+<p>\[\begin{equation}
+\begin{split}
+E(X^k) &amp;= \int_0^1 x^k f(x \mid \alpha, \beta) \, dx \\
+       &amp;= \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha) \Gamma(\beta)} \int_0^1 x^{\alpha + k -1}(1-x)^{\beta - 1} \, dx \\
+       &amp;= \frac{\Gamma(\alpha + \beta)}{\Gamma(\alpha)\Gamma(\beta)}  \cdot  \frac{\Gamma(\alpha + k) \Gamma(\beta)}{\Gamma(\alpha + k + \beta)}
+\end{split}
+\label{beta_moment}
+\end{equation}\] </p>
+
+<p>And the Gamma function has a property that:</p>
+
+<p>\[\begin{equation}
+\begin{matrix}
+\Gamma(\alpha) = (\alpha - 1)\Gamma(\alpha-1) &amp; if \alpha \gt 1
+\end{matrix}
+\label{gamma_property}
+\end{equation}\]</p>
+
+<p>Combine \(\eqref{beta_moment}\) and \(\eqref{gamma_property}\), we have that:</p>
+
+<p>\[\begin{equation}
+E(X) = \frac{\alpha}{\alpha + \beta}
+\end{equation}\]</p>
+
+<p>\[\begin{equation}
+E(X^2) = \frac{\alpha (\alpha + 1)}{(\alpha + \beta)(\alpha + \beta + 1)}
+\end{equation}\]</p>
+
+<p>So we get:
+\[\begin{equation}
+Var(X) = E(X^2) -(E(X))^2 =\frac{\alpha \beta}{(\alpha + \beta)^2(\alpha + \beta + 1)}
+\end{equation}\]</p>
+
+<h3 id="toc_6">P2.5</h3>
+
+<p>Bellow I will show that \(\eqref{beta_eq_gamma}\) and \(\eqref{beta_eq}\) are equal:
+\[
+\begin{split}
+\Gamma(a)\Gamma(b) 
+&amp;= \int_0^\infty e^{-x} x^{a-1} \, dx \int_0^{\infty} e^{-y} y^{b-1} \, dy  \\
+&amp;= \int_0^\infty \int_0^\infty  e^{-(x+y)} x^{a-1} y^{b-1} \, dx \,dy  \\
+\end{split}\]</p>
+
+<p>change \(t = x + y\), naturally \(t \ge x\) we have:</p>
+
+<p>\[\begin{split}
+\int_0^\infty \int_0^\infty  e^{-(x+y)} x^{a-1} y^{b-1} \, dx \,dy  
+&amp;= \int_0^\infty e^{-t} \left(\int_0^\infty x^{a-1}(t-x)^{b-1} \, dx\right)\, dt \\
+&amp; \stackrel{x=\mu t}{=}\int_0^\infty e^{-t} \left( t^{a+b-1 } \int_0^{1} \mu^{a-1} (1-\mu)^{b-1} \, d\mu\right) dt \\
+&amp; = \int_0^{1} \mu^{a-1} (1-\mu)^{b-1} \, d\mu \int_0^{\infty}e^{-t} t^{a+b-1} \, dt \\
+&amp;= \int_0^{1} \mu^{a-1} (1-\mu)^{b-1} \, d\mu \cdot \Gamma(a+b)
+\end{split}\]</p>
+
+<h3 id="toc_7">P2.6</h3>
+
+<p>\[\begin{equation}
+\begin{split}
+E(X^k) &amp;= \int_0^{\infty} x^k \frac{b^a}{\Gamma(a)} x^{a-1} e^{-bx} \, dx \\
+&amp;\stackrel{z=bx}{=}\int_0^{\infty} \frac{b^a}{\Gamma(a)} \left(\frac{z}{b}\right)^{a-1+k}e^{z} \frac{1}{b}\, dz \\
+&amp;= b^{-k} \frac{\Gamma(a+k)}{\Gamma(a)} \\
+\end{split}
+\end{equation}\]</p>
+
+<p>Then we have:
+\[\begin{align}
+E(X) &amp;= \frac{a}{b} \\
+E(X^2) &amp;= \frac{(a+1)a}{b^2}  \\
+Var(X) &amp;=E(X^2)-(E(X))^2 = \frac{a}{b^2}
+\end{align}\]</p>
+
+<h3 id="toc_8">P2.7</h3>
+
+<p>See <a href="http://www.mas.ncl.ac.uk/%7Enmf16/teaching/mas3301/week6.pdf">http://www.mas.ncl.ac.uk/~nmf16/teaching/mas3301/week6.pdf</a> for details.</p>
+
+<h3 id="toc_9">P2.8</h3>
+
+<p>Suppose \(Var(X_i) = \sigma^2\), so we have \(Var(\bar{X})=\sigma^2/n\), when \(n \to \infty\), \(Var(\bar{X}) \to 0\).</p>
+
+<h3 id="toc_10">P2.11</h3>
+
+<p>Let \(f(x) = \ln x -x + 1\), the first order is \(f&#39;(x) = 1/x - 1\), so we have \(f(x) \ge f(1) = 0\).</p>
+
+<h3 id="toc_11">P2.12</h3>
+
+<p>\[\begin{equation}
+\begin{split}
+I(x,y) &amp;= \sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}}P(x,y) \log {\frac{P(x,y)}{P(x)P(y)}} \\
+&amp;= - \sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}}P(x,y) \log {\frac{P(x)P(y)}{P(x,y)}} \\
+&amp; \ge - \sum_{x \in \mathcal{X}} \sum_{y \in \mathcal{Y}} P(x,y)\left(\frac{P(x)P(y)}{P(x,y)} -1\right) \\
+\end{split}
+\end{equation}\]</p>
+
+<h3 id="toc_12">P2.13</h3>
+
+<p>\[
+\begin{equation}
+\begin{split}
+-\sum_{i \in I} p_i \log \left( \frac {q_i} {p_i} \right) &amp; \ge - \sum_{i \in I} p_i \left( \frac {q_i - p_i} {p_i}\right) \\
+ &amp;= -\sum_{i \in I} (q_i - p_i) \\
+ &amp;= 1 - \sum_{i \in I} q_i \\
+ &amp;\ge 0
+\end{split}
+\end{equation}
+\]</p>
+
+<h3 id="toc_13">P2.15</h3>
+
+<p>See <a href="https://stats.stackexchange.com/questions/66108/why-is-entropy-maximised-when-the-probability-distribution-is-uniform">https://stats.stackexchange.com/questions/66108/</a> for details.</p>
+
+<h2 id="toc_14">CH03</h2>
+
+<p>这一章先从参数估计入手，介绍了参数视角下的线性回归和分类问题，作者提到了本书重点关注有监督的问题，无监督的问题没有涉及。</p>
+
+<p>下面是我写的部分习题的解答。</p>
+
+<h3 id="toc_15">P3.1</h3>
+
+<p>\[\begin{equation}
+\begin{split}
+\sigma_c^2 &amp;= Var(\hat{\theta}) \\
+&amp;= Var(\frac{1}{m} \sum_{i=1}^{m} \hat{\theta}_i) \\
+&amp;= \frac{1}{m^2} \sum_{i=1}^{m} Var(\hat{\theta}_i) \\
+&amp;= \frac{1}{m} \sigma^2
+\end{split}
+\end{equation}\]</p>
+
+<h3 id="toc_16">P3.2 &amp; P3.3</h3>
+
+<p>See <a href="http://willett.ece.wisc.edu/wp-uploads/2016/01/15-MVUE.pdf">http://willett.ece.wisc.edu/wp-uploads/2016/01/15-MVUE.pdf</a> for details.</p>
+
+<h3 id="toc_17">P3.4</h3>
+
+<p>According to the quadratic formula, we can easily get the inequation.</p>
+
+<h3 id="toc_18">P3.5</h3>
+
+<p>By taking the derivative of \(MSE(\hat{\theta}_b)\) with respect to \(\alpha\), we let:</p>
+
+<p>\[\begin{equation}
+2(1+\alpha)MSE(\hat{\theta}_{MVU}) + 2\hat{\theta}_o^2 \alpha = 0
+\end{equation}\]</p>
+
+<p>and then we get:</p>
+
+<p>\[\begin{equation}
+\alpha_* = - \frac{MSE(\hat{\theta}_{MVU})}{MSE(\hat{\theta}_{MVU}) + \hat{\theta}_o^2} = - \frac{1}{1+\frac{\hat{\theta}_o^2}{MSE(\hat{\theta}_{MVU})}}
+\end{equation}\]</p>
+
+<h3 id="toc_19">P3.6</h3>
+
+<p>Since the expectation in Eq 3.26 is taken with respect to \(p(\mathcal{X};\theta)\), if the integration and differentiation can be interchanged, we can first take the integration of \(p(\mathcal{X};\theta)\), resulting Eq 3.26</p>
+
+
+
+<script type="text/x-mathjax-config">
+(function () {
+
+MathJax.Hub.Config({
+	'showProcessingMessages': false,
+	'messageStyle': 'none'
+});
+
+if (typeof MathJaxListener !== 'undefined') {
+	MathJax.Hub.Register.StartupHook('End', function () {
+		MathJaxListener.invokeCallbackForKey_('End');
+	});
+}
+
+})();
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+</body>
+
+</html>
